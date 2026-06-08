@@ -47,6 +47,20 @@ describe('Lovv admin console', () => {
     expect(screen.getByText('제안자에게 사유 표시')).toBeInTheDocument()
   })
 
+  it('centers the operator avatar and proposal status labels', () => {
+    render(<App />)
+
+    expect(screen.getByTestId('operator-avatar')).toHaveClass('operator-avatar')
+    expect(screen.getByTestId('operator-avatar')).toHaveAttribute('data-alignment', 'centered')
+
+    fireEvent.click(screen.getByRole('tab', { name: '제안 검토' }))
+
+    const queue = screen.getByRole('table', { name: '대기 중인 데이터 제안 목록' })
+    const pendingStatus = within(queue).getByText('pending')
+    expect(pendingStatus).toHaveClass('status-pill')
+    expect(pendingStatus).toHaveAttribute('data-alignment', 'centered')
+  })
+
   it('summarizes publish, index refresh, and user recommendation reflection states', () => {
     render(<App />)
 

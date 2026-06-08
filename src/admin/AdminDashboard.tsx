@@ -126,7 +126,9 @@ function DataProposalPanel() {
           <textarea value={proposalDraft.evidence} readOnly aria-label="근거 자료" />
         </label>
         <div className="form-actions">
-          <span className="status-pill status-pending">pending</span>
+          <span className="status-pill status-pending" data-alignment="centered">
+            pending
+          </span>
           <button type="button">대기 상태로 저장</button>
         </div>
       </form>
@@ -163,7 +165,9 @@ function ReviewQueuePanel() {
                   </td>
                   <td>{proposal.region}</td>
                   <td>
-                    <span className={`status-pill status-${proposal.status}`}>{proposal.status}</span>
+                    <span className={`status-pill status-${proposal.status}`} data-alignment="centered">
+                      {proposal.status}
+                    </span>
                   </td>
                   <td>{proposal.submittedAt}</td>
                 </tr>
@@ -222,7 +226,9 @@ function PublishStatusTimeline() {
             <div>
               <h3>{event.title}</h3>
               <p>{event.description}</p>
-              <span className={`status-pill status-${event.status}`}>{statusLabels[event.status]}</span>
+              <span className={`status-pill status-${event.status}`} data-alignment="centered">
+                {statusLabels[event.status]}
+              </span>
             </div>
           </li>
         ))}
@@ -243,7 +249,9 @@ export function AdminDashboard() {
           <h1>Lovv Admin Console</h1>
         </div>
         <div className="operator-card" aria-label="현재 관리자 세션">
-          <span className="operator-avatar">A</span>
+          <span className="operator-avatar" data-alignment="centered" data-testid="operator-avatar">
+            A
+          </span>
           <div>
             <strong>운영자/관리자 로그인</strong>
             <span>Mock SSO Session</span>

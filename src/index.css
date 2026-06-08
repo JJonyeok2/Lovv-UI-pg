@@ -134,18 +134,23 @@ h3 {
   border-radius: 8px;
   background: var(--lovv-color-soft);
   box-shadow: 0 10px 24px -22px rgb(51 39 30 / 0.36);
+  overflow: hidden;
 }
 
 .operator-avatar {
-  display: grid;
-  width: 42px;
-  height: 42px;
-  place-items: center;
+  display: flex;
+  flex: 0 0 44px;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
   border: 1px solid var(--lovv-color-primary-deep);
   border-radius: 50%;
   color: var(--lovv-color-text);
   background: var(--lovv-color-primary);
   font-weight: 900;
+  line-height: 44px;
+  text-align: center;
 }
 
 .operator-card strong,
@@ -465,11 +470,23 @@ h3 {
 .status-pill {
   display: inline-flex;
   align-items: center;
+  justify-content: center;
   min-height: 28px;
   padding: 0 9px;
   border-radius: 999px;
   font-size: 0.78rem;
   font-weight: 900;
+  line-height: 1;
+  text-align: center;
+  white-space: nowrap;
+}
+
+.proposal-table td .status-pill {
+  display: flex;
+  width: min(100%, 220px);
+  margin-top: 0;
+  justify-content: center;
+  text-align: center;
 }
 
 .status-pending {
