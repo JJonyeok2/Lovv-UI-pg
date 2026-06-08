@@ -61,6 +61,17 @@ describe('Lovv admin console', () => {
     expect(pendingStatus).toHaveAttribute('data-alignment', 'centered')
   })
 
+  it('keeps approved status text white inside proposal tables', () => {
+    render(<App />)
+
+    fireEvent.click(screen.getByRole('tab', { name: '제안 검토' }))
+
+    const queue = screen.getByRole('table', { name: '대기 중인 데이터 제안 목록' })
+    const approvedStatus = within(queue).getByText('approved')
+    expect(approvedStatus).toHaveClass('status-approved')
+    expect(approvedStatus).toHaveAttribute('data-contrast', 'on-dark')
+  })
+
   it('summarizes publish, index refresh, and user recommendation reflection states', () => {
     render(<App />)
 

@@ -489,6 +489,10 @@ h3 {
   text-align: center;
 }
 
+.proposal-table td .status-pill[data-contrast='on-dark'] {
+  color: #ffffff;
+}
+
 .status-pending {
   color: var(--lovv-color-primary-dark);
   background: #ffe0ca;

@@ -27,6 +27,12 @@ const toneLabelClassNames: Record<SummaryMetric['tone'], string> = {
   red: 'tone-red',
 }
 
+const highContrastStatusText = new Set<ProposalStatus>(['approved', 'published', 'indexed', 'rejected'])
+
+function getStatusContrast(status: ProposalStatus) {
+  return highContrastStatusText.has(status) ? 'on-dark' : undefined
+}
+
 function SummaryCards() {
   return (
     <section className="summary-grid" aria-label="관리자 처리 현황">
@@ -165,7 +171,11 @@ function ReviewQueuePanel() {
                   </td>
                   <td>{proposal.region}</td>
                   <td>
-                    <span className={`status-pill status-${proposal.status}`} data-alignment="centered">
+                    <span
+                      className={`status-pill status-${proposal.status}`}
+                      data-alignment="centered"
+                      data-contrast={getStatusContrast(proposal.status)}
+                    >
                       {proposal.status}
                     </span>
                   </td>
@@ -226,7 +236,11 @@ function PublishStatusTimeline() {
             <div>
               <h3>{event.title}</h3>
               <p>{event.description}</p>
-              <span className={`status-pill status-${event.status}`} data-alignment="centered">
+              <span
+                className={`status-pill status-${event.status}`}
+                data-alignment="centered"
+                data-contrast={getStatusContrast(event.status)}
+              >
                 {statusLabels[event.status]}
               </span>
             </div>
