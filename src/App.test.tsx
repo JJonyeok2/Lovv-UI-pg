@@ -6,6 +6,7 @@ describe('Lovv admin console', () => {
   it('renders the admin workflow overview with role-based lanes', () => {
     render(<App />)
 
+    expect(screen.getByTestId('lovv-admin-shell')).toHaveAttribute('data-theme', 'lovv')
     expect(screen.getByRole('heading', { name: 'Lovv Admin Console' })).toBeInTheDocument()
     expect(screen.getByRole('tab', { name: '운영 지표' })).toHaveAttribute('aria-selected', 'true')
     expect(screen.getByRole('tab', { name: '데이터 제안' })).toBeInTheDocument()

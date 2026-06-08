@@ -236,7 +236,7 @@ export function AdminDashboard() {
   const activePanelId = useMemo(() => `admin-panel-${activeTab}`, [activeTab])
 
   return (
-    <main className="app-shell">
+    <main className="app-shell" data-testid="lovv-admin-shell" data-theme="lovv">
       <header className="topbar">
         <div>
           <p className="eyebrow">Lovv Operations</p>
