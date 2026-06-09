@@ -59,7 +59,7 @@ Lovv Admin Web
 
 ## RDS Assumptions To Confirm
 
-- RDS engine is not confirmed yet: PostgreSQL or MySQL must be selected before implementation.
+- RDS engine is confirmed as MySQL.
 - Connection values must be provided through Vercel environment variables.
 - RDS network access must allow the deployed API runtime to connect.
 - A dedicated read-only DB user must exist before production use.
@@ -70,9 +70,9 @@ Lovv Admin Web
 Names may be finalized during implementation, but the values must remain server-only:
 
 ```text
-RDS_ENGINE=postgres|mysql
+RDS_ENGINE=mysql
 RDS_HOST=example.rds.amazonaws.com
-RDS_PORT=5432
+RDS_PORT=3306
 RDS_DATABASE=lovv
 RDS_READONLY_USER=lovv_admin_readonly
 RDS_READONLY_PASSWORD=replace-with-vercel-secret
@@ -183,7 +183,7 @@ If a table is required for search but contains sensitive fields, only safe displ
 ## Risks
 
 - Vercel serverless functions may need RDS network access through public RDS endpoint, VPC integration, proxy, or another backend depending on deployment setup.
-- RDS engine and schema are not confirmed, so implementation cannot safely choose a query library or SQL dialect yet.
+- RDS schema and table whitelist are not confirmed, so production search must remain disabled until the whitelist is configured.
 - Full cross-table search can be expensive; whitelist and pagination are mandatory.
 - Frontend role state is mock-only until real auth is connected.
 
@@ -209,7 +209,7 @@ If a table is required for search but contains sensitive fields, only safe displ
 
 - Purpose: 확정된 RDS 엔진에 맞는 read-only 검색 adapter를 구현합니다.
 - Scope: server-side DB adapter only.
-- Dependencies: RDS engine, connection env names, table whitelist.
+- Dependencies: MySQL, connection env names, table whitelist.
 - Acceptance Criteria: parameterized query, whitelist table/column mapping, masked normalized result.
 - Verification: unit tests with mocked adapter or integration test against approved test DB.
 

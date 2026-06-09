@@ -21,6 +21,13 @@ export type DbSearchTableConfig = {
   searchableFields: readonly string[]
   displayFields: readonly string[]
   maskedFields?: readonly string[]
+  resultFields?: {
+    id?: string
+    summary?: string
+    title?: string
+    updatedAt?: string
+  }
+  sourceTable?: string
 }
 
 export type DbSearchQuery = {

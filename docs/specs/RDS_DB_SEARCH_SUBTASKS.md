@@ -10,9 +10,13 @@
 
 일단 검색만 고려하는걸로. RDS야
 
+Follow-up input:
+
+MySQL
+
 ## Structured Agent Contract
 
-Implement a search-only RDS inspection feature for the Lovv admin web. Do not implement database writes, raw SQL execution, schema mutation, direct browser-to-RDS connections, or secret exposure. Use Atomic commits per Subtask.
+Implement a search-only RDS inspection feature for the Lovv admin web against a MySQL RDS database. Do not implement database writes, raw SQL execution, schema mutation, direct browser-to-RDS connections, or secret exposure. Use Atomic commits per Subtask.
 
 ## Execution Policy
 
@@ -99,12 +103,12 @@ Implement a search-only RDS inspection feature for the Lovv admin web. Do not im
 
 - Purpose: 확정된 RDS 엔진과 whitelist에 맞춰 read-only 검색 adapter를 구현합니다.
 - Required Inputs Before Starting:
-  - RDS engine: PostgreSQL or MySQL.
-  - Allowed table list.
-  - Allowed searchable columns per table.
-  - ID/title/summary/date mapping per table.
-  - Sensitive columns to mask/exclude.
-  - Deployment connectivity path from Vercel/API runtime to RDS.
+  - RDS engine: MySQL. Confirmed by user.
+  - Allowed table list. Pending for production activation.
+  - Allowed searchable columns per table. Pending for production activation.
+  - ID/title/summary/date mapping per table. Pending for production activation.
+  - Sensitive columns to mask/exclude. Pending for production activation.
+  - Deployment connectivity path from Vercel/API runtime to RDS. Pending for production activation.
 - Context Budget:
   - Must read:
     - `docs/specs/RDS_DB_SEARCH_SPEC.md`
@@ -128,6 +132,7 @@ Implement a search-only RDS inspection feature for the Lovv admin web. Do not im
   - Uses read-only connection assumptions.
   - Returns normalized paginated results.
   - Masks/excludes sensitive fields.
+  - Production search remains disabled until real table whitelist and connectivity path are confirmed.
 - Verification:
   - Unit tests with mocked DB client.
   - Integration test only when a safe test RDS is explicitly approved.
