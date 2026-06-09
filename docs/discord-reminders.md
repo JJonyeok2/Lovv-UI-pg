@@ -13,6 +13,13 @@ All cron schedules are stored in UTC because GitHub Actions scheduled workflows 
 | 10:00 | `0 1 * * 1-5` | Monday-Friday | `오전 10시입니다. 에어팟을 끼고 각자 할 일에 집중해주세요. 대화는 DM으로 부탁드려요 🙏` |
 | 17:00 | `0 8 * * 1-5` | Monday-Friday | `오후 5시입니다. 오늘 각자 진행상황을 팀 Notion에 업로드해주세요.` |
 
+Scheduled runs are sent only when the actual KST execution time is inside the first 10 minutes of the target hour:
+
+- 10:00-10:09 KST for the focus reminder.
+- 17:00-17:09 KST for the progress reminder.
+
+If GitHub Actions starts a scheduled run late, the workflow skips the Discord send step to avoid wrong-time messages.
+
 ## Required Secret
 
 Create a Discord incoming webhook for the `SKN_3rd_PJ` channel, then save the webhook URL as a GitHub Actions repository secret:
