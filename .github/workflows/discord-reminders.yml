@@ -39,7 +39,7 @@ jobs:
           if [ "$MANUAL_REMINDER" = "focus" ]; then
             echo "message=오전 10시입니다. 에어팟을 끼고 각자 할 일에 집중해주세요. 대화는 DM으로 부탁드려요 🙏" >> "$GITHUB_OUTPUT"
           elif [ "$MANUAL_REMINDER" = "progress" ]; then
-            echo "message=오후 5시입니다. 오늘 각자 진행상황을 팀 Notion에 업로드해주세요." >> "$GITHUB_OUTPUT"
+            echo "message=5시~5시 30분 안으로 Notion에 오늘 작업 정리 업데이트 해주세요" >> "$GITHUB_OUTPUT"
           elif [ "$SCHEDULE" = "5 1 * * 1-5" ]; then
             echo "message=오전 10시입니다. 에어팟을 끼고 각자 할 일에 집중해주세요. 대화는 DM으로 부탁드려요 🙏" >> "$GITHUB_OUTPUT"
             if [[ "$kst_time" != 10:0[0-9] && "$kst_time" != 10:1[0-4] ]]; then
@@ -47,10 +47,10 @@ jobs:
               skip_reason="Scheduled run delayed outside 10:00-10:14 KST window. Actual KST time: $kst_time."
             fi
           elif [ "$SCHEDULE" = "5 8 * * 1-5" ]; then
-            echo "message=오후 5시입니다. 오늘 각자 진행상황을 팀 Notion에 업로드해주세요." >> "$GITHUB_OUTPUT"
-            if [[ "$kst_time" != 17:0[0-9] && "$kst_time" != 17:1[0-4] ]]; then
+            echo "message=5시~5시 30분 안으로 Notion에 오늘 작업 정리 업데이트 해주세요" >> "$GITHUB_OUTPUT"
+            if [[ "$kst_time" != 17:0[0-9] && "$kst_time" != 17:1[0-9] && "$kst_time" != 17:2[0-9] && "$kst_time" != 17:30 ]]; then
               should_send=false
-              skip_reason="Scheduled run delayed outside 17:00-17:14 KST window. Actual KST time: $kst_time."
+              skip_reason="Scheduled run delayed outside 17:00-17:30 KST window. Actual KST time: $kst_time."
             fi
           else
             echo "Unsupported reminder schedule: $SCHEDULE"
