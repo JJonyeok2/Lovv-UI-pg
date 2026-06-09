@@ -1,6 +1,6 @@
-import { useMemo, useState } from 'react'
+import { useMemo, useState, type ChangeEvent } from 'react'
 import { localMetrics, proposalDraft, publishEvents, reviewProposals, roleLanes, summaryMetrics } from './adminData'
-import type { AdminTab, ProposalStatus, SummaryMetric } from './types'
+import type { AdminRole, AdminTab, ProposalStatus, RoleTabPermissions, SummaryMetric } from './types'
 
 const tabs: { id: AdminTab; label: string }[] = [
   { id: 'metrics', label: '운영 지표' },
@@ -8,6 +8,24 @@ const tabs: { id: AdminTab; label: string }[] = [
   { id: 'review', label: '제안 검토' },
   { id: 'publish', label: '반영 상태' },
 ]
+
+const roleOptions: { role: AdminRole; label: string }[] = [
+  { role: 'R-ADMIN', label: '관리자 (R-ADMIN)' },
+  { role: 'R-DATA-PROVIDER', label: '데이터 제공자 (R-DATA-PROVIDER)' },
+  { role: 'R-LOCAL-OPERATOR', label: '지역 운영자 (R-LOCAL-OPERATOR)' },
+]
+
+const roleTabPermissions: RoleTabPermissions = {
+  'R-LOCAL-OPERATOR': ['metrics'],
+  'R-DATA-PROVIDER': ['proposal'],
+  'R-ADMIN': ['metrics', 'review', 'publish'],
+}
+
+const roleDefaultTab: Record<AdminRole, AdminTab> = {
+  'R-LOCAL-OPERATOR': 'metrics',
+  'R-DATA-PROVIDER': 'proposal',
+  'R-ADMIN': 'metrics',
+}
 
 const statusLabels: Record<ProposalStatus, string> = {
   draft: '초안',
@@ -31,6 +49,14 @@ const highContrastStatusText = new Set<ProposalStatus>(['approved', 'published',
 
 function getStatusContrast(status: ProposalStatus) {
   return highContrastStatusText.has(status) ? 'on-dark' : undefined
+}
+
+function isTabAllowed(role: AdminRole, tabId: AdminTab) {
+  return roleTabPermissions[role].includes(tabId)
+}
+
+function getTabLockReason(role: AdminRole, tabLabel: string) {
+  return `역할 접근 제한: ${role} 역할은 ${tabLabel} 작업 영역을 사용할 수 없습니다.`
 }
 
 function SummaryCards() {
@@ -99,7 +125,9 @@ function LocalOperatorMetrics() {
   )
 }
 
-function DataProposalPanel() {
+function DataProposalPanel({ currentRole }: { currentRole: AdminRole }) {
+  const canSaveProposal = currentRole === 'R-DATA-PROVIDER'
+
   return (
     <section className="panel form-panel" aria-labelledby="proposal-title">
       <div className="section-heading">
@@ -135,15 +163,20 @@ function DataProposalPanel() {
           <span className="status-pill status-pending" data-alignment="centered">
             pending
           </span>
-          <button type="button">대기 상태로 저장</button>
+          {canSaveProposal ? (
+            <button type="button">대기 상태로 저장</button>
+          ) : (
+            <span className="role-action-lock">R-DATA-PROVIDER 역할에서만 저장할 수 있습니다.</span>
+          )}
         </div>
       </form>
     </section>
   )
 }
 
-function ReviewQueuePanel() {
+function ReviewQueuePanel({ currentRole }: { currentRole: AdminRole }) {
   const selectedProposal = reviewProposals[0]
+  const canMakeDecision = currentRole === 'R-ADMIN'
 
   return (
     <section className="review-layout" aria-label="관리자 검토 작업 영역">
@@ -205,18 +238,22 @@ function ReviewQueuePanel() {
             <dd>{selectedProposal.proposerRole}</dd>
           </div>
         </dl>
-        <div className="decision-actions">
-          <button type="button" className="approve-button">
-            승인
-          </button>
-          <button type="button" className="reject-button">
-            반려/수정 요청
-          </button>
-        </div>
-        <div className="reason-box">
-          <strong>제안자에게 사유 표시</strong>
-          <p>수정 가이드와 반려 사유를 제안 이력에 남기는 상태입니다.</p>
-        </div>
+        {canMakeDecision && (
+          <>
+            <div className="decision-actions">
+              <button type="button" className="approve-button">
+                승인
+              </button>
+              <button type="button" className="reject-button">
+                반려/수정 요청
+              </button>
+            </div>
+            <div className="reason-box">
+              <strong>제안자에게 사유 표시</strong>
+              <p>수정 가이드와 반려 사유를 제안 이력에 남기는 상태입니다.</p>
+            </div>
+          </>
+        )}
       </aside>
     </section>
   )
@@ -252,8 +289,16 @@ function PublishStatusTimeline() {
 }
 
 export function AdminDashboard() {
+  const [currentRole, setCurrentRole] = useState<AdminRole>('R-ADMIN')
   const [activeTab, setActiveTab] = useState<AdminTab>('metrics')
   const activePanelId = useMemo(() => `admin-panel-${activeTab}`, [activeTab])
+
+  function handleRoleChange(event: ChangeEvent<HTMLSelectElement>) {
+    const nextRole = event.target.value as AdminRole
+
+    setCurrentRole(nextRole)
+    setActiveTab((currentTab) => (isTabAllowed(nextRole, currentTab) ? currentTab : roleDefaultTab[nextRole]))
+  }
 
   return (
     <main className="app-shell" data-testid="lovv-admin-shell" data-theme="lovv">
@@ -266,9 +311,22 @@ export function AdminDashboard() {
           <span className="operator-avatar" data-alignment="centered" data-testid="operator-avatar">
             A
           </span>
-          <div>
+          <div className="operator-session">
             <strong>운영자/관리자 로그인</strong>
-            <span>Mock SSO Session</span>
+            <span className="session-type">Mock SSO Session</span>
+            <span className="current-role-badge" data-testid="current-role-badge">
+              현재 {currentRole}
+            </span>
+            <label className="role-select-label" htmlFor="mock-role-select">
+              <span className="role-select-text">현재 세션 역할</span>
+              <select id="mock-role-select" value={currentRole} onChange={handleRoleChange}>
+                {roleOptions.map((option) => (
+                  <option key={option.role} value={option.role}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </label>
           </div>
         </div>
       </header>
@@ -276,20 +334,45 @@ export function AdminDashboard() {
       <SummaryCards />
 
       <nav className="tab-list" role="tablist" aria-label="관리자 콘솔 메뉴">
-        {tabs.map((tab) => (
-          <button
-            aria-controls={`admin-panel-${tab.id}`}
-            aria-selected={activeTab === tab.id}
-            className={activeTab === tab.id ? 'tab-button active' : 'tab-button'}
-            id={`admin-tab-${tab.id}`}
-            key={tab.id}
-            onClick={() => setActiveTab(tab.id)}
-            role="tab"
-            type="button"
-          >
-            {tab.label}
-          </button>
-        ))}
+        {tabs.map((tab) => {
+          const tabAllowed = isTabAllowed(currentRole, tab.id)
+          const lockReason = getTabLockReason(currentRole, tab.label)
+          const lockReasonId = `admin-tab-${tab.id}-lock-reason`
+
+          return (
+            <button
+              aria-controls={`admin-panel-${tab.id}`}
+              aria-describedby={tabAllowed ? undefined : lockReasonId}
+              aria-disabled={!tabAllowed}
+              aria-label={tab.label}
+              aria-selected={activeTab === tab.id}
+              className={activeTab === tab.id ? 'tab-button active' : 'tab-button'}
+              data-locked={tabAllowed ? undefined : 'true'}
+              disabled={!tabAllowed}
+              id={`admin-tab-${tab.id}`}
+              key={tab.id}
+              onClick={() => {
+                if (tabAllowed) {
+                  setActiveTab(tab.id)
+                }
+              }}
+              role="tab"
+              type="button"
+            >
+              <span className="tab-label">{tab.label}</span>
+              {!tabAllowed && (
+                <>
+                  <span className="tab-lock" aria-hidden="true">
+                    잠김
+                  </span>
+                  <span className="tab-lock-reason" id={lockReasonId}>
+                    {lockReason}
+                  </span>
+                </>
+              )}
+            </button>
+          )
+        })}
       </nav>
 
       <div
@@ -304,8 +387,8 @@ export function AdminDashboard() {
             <LocalOperatorMetrics />
           </div>
         )}
-        {activeTab === 'proposal' && <DataProposalPanel />}
-        {activeTab === 'review' && <ReviewQueuePanel />}
+        {activeTab === 'proposal' && <DataProposalPanel currentRole={currentRole} />}
+        {activeTab === 'review' && <ReviewQueuePanel currentRole={currentRole} />}
         {activeTab === 'publish' && <PublishStatusTimeline />}
       </div>
     </main>

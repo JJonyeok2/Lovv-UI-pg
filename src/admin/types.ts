@@ -2,6 +2,8 @@ export type AdminTab = 'metrics' | 'proposal' | 'review' | 'publish'
 
 export type AdminRole = 'R-LOCAL-OPERATOR' | 'R-DATA-PROVIDER' | 'R-ADMIN'
 
+export type RoleTabPermissions = Record<AdminRole, readonly AdminTab[]>
+
 export type ProposalStatus =
   | 'draft'
   | 'pending'
